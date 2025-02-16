@@ -13,5 +13,10 @@ namespace Domain.Entities
         public string SkuCode { get; set; }
         public decimal Price { get; set; }
         public int Quantity { get; set; }
+
+        public Guid OrderId { get; set; }
+
+        // Navigation Property
+        public virtual Order Order { get; set; }
     }
 }

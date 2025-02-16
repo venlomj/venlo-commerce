@@ -1,6 +1,14 @@
-﻿namespace Infrastructure.Persistence;
+﻿using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
-public class VenloCommerceDbContext
+namespace Infrastructure.Persistence;
+
+public class VenloCommerceDbContext : DbContext
 {
+    public VenloCommerceDbContext(DbContextOptions<VenloCommerceDbContext> options): base(options) { }
 
+    public DbSet<Product> Products { get; set; }
+    public DbSet<StockItem> StockItems { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderLineItem> orderLineItems { get; set; }
 }
