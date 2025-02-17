@@ -1,4 +1,5 @@
 ﻿using Application.DTOs.Products;
+using Application.UseCases.Products.Commands;
 using Application.UseCases.Products.Queries;
 using AutoMapper;
 using MediatR;
@@ -27,6 +28,16 @@ namespace Api.Controllers
             return Ok(result);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddProduct([FromBody] ProductRequest request)
+        {
+            var result = await _mediator.Send(new AddProductCommand(request));
+
+            return Ok(result);
+        }
+
+        
+
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetProduct(Guid id)
         {
@@ -38,6 +49,8 @@ namespace Api.Controllers
                 onNull: () => NotFound(new { message = "Product not found." })
             );
         }
+
+
 
         //[HttpGet("{id:guid}")]
         //public async Task<IActionResult> GetProduct(Guid id)

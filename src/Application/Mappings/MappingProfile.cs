@@ -9,6 +9,7 @@ namespace Application.Mappings
         public MappingProfile()
         {
             CreateMap<Product, ProductResponse>();
+            CreateMap<ProductRequest, Product>();
         }
     }
 }

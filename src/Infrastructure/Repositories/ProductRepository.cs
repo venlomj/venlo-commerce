@@ -29,9 +29,10 @@ namespace Infrastructure.Repositories
             return await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Task<Product> CreateAsync(Product product)
+        public async Task<Product> AddAsync(Product product)
         {
-            throw new NotImplementedException();
+            await _context.Products.AddAsync(product);
+            return product;
         }
 
         public Task<Product> UpdateAsync(Guid id, Product product)
