@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
-using Domain.Repositories;
+using Domain.Repositories.Products;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,14 +36,16 @@ namespace Infrastructure.Repositories
             return product;
         }
 
-        public Task<Product> UpdateAsync(Guid id, Product product)
+        public Task<Product> UpdateAsync(Product product)
         {
-            throw new NotImplementedException();
+            _context.Products.Update(product);
+            return Task.FromResult(product);
         }
 
         public Task<Product> DeleteAsync(Guid id)
         {
             throw new NotImplementedException();
         }
+
     }
 }

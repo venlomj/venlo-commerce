@@ -50,6 +50,14 @@ namespace Api.Controllers
             );
         }
 
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductRequest request)
+        {
+            var result = await _mediator.Send(new UpdateProductCommand(id, request));
+
+            return Ok(result);
+        }
+
 
 
         //[HttpGet("{id:guid}")]

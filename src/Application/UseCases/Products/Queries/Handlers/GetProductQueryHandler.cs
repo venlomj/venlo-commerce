@@ -7,7 +7,7 @@ using Application.DTOs.Products;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Exceptions;
-using Domain.Repositories;
+using Domain.Repositories.Products;
 using MediatR;
 using SharedKernel;
 
@@ -15,18 +15,18 @@ namespace Application.UseCases.Products.Queries.Handlers
 {
     public class GetProductQueryHandler : IRequestHandler<GetProductQuery, Result<ProductResponse>>
     {
-        private readonly IProductRepository _productRepository;
+        private readonly IProductsReaderRepository _productsReaderRepository;
         private readonly IMapper _mapper;
 
-        public GetProductQueryHandler(IProductRepository productRepository, IMapper mapper)
+        public GetProductQueryHandler(IProductsReaderRepository productsReaderRepository, IMapper mapper)
         {
-            _productRepository = productRepository;
+            _productsReaderRepository = productsReaderRepository;
             _mapper = mapper;
         }
 
         public async Task<Result<ProductResponse>> Handle(GetProductQuery request, CancellationToken cancellationToken)
         {
-            var product = await _productRepository.GetByIdAsync(request.Id);
+            var product = await _productsReaderRepository.GetById(request.Id);
             if (product == null)
             {
                 return new BusinessLogicException($"Product with {request.Id} not found.");
