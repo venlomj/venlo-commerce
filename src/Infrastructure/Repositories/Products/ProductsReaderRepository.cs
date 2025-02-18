@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Domain.Repositories.Products;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories.Base;
@@ -29,6 +23,13 @@ namespace Infrastructure.Repositories.Products
         public override async Task<Product> GetById(Guid id)
         {
             return await _context.Products.FindAsync(id) ?? null!;
+        }
+
+        public override async Task<IEnumerable<Product>> MultipleByValue(IEnumerable<string> values)
+        {
+            return await _context.Products
+                .Where(p => values.Contains(p.SkuCode))
+                .ToListAsync();
         }
 
         public override async Task<bool> Exists(Guid id)

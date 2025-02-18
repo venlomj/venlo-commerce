@@ -13,6 +13,8 @@ namespace Infrastructure.Repositories.Base
     {
         public abstract Task<IEnumerable<T>> GetAll();
         public abstract Task<T> GetById(Guid id);
+        public abstract Task<IEnumerable<T>> MultipleByValue(IEnumerable<string> values);
+
         public abstract Task<bool> Exists(Guid id);
     }
 }

@@ -12,5 +12,6 @@ namespace Domain.Repositories.Base
     {
         Task<IEnumerable<T>> GetAll();
         Task<T> GetById(Guid id);
+        Task<IEnumerable<T>> MultipleByValue(IEnumerable<string> values);
     }
 }
