@@ -9,7 +9,7 @@ using Domain.Repositories.Base;
 namespace Domain.Repositories.Products
 {
     public interface IProductWriterRepository : IBaseCreate<Product>,
-        IBaseUpdate<Product>
+        IBaseUpdate<Product>, IBaseDelete<Product>
     {
     }
 }

@@ -5,10 +5,11 @@ using Domain.Exceptions;
 using Domain.Repositories.Products;
 using Domain.UoW;
 using MediatR;
+using SharedKernel;
 
 namespace Application.UseCases.Products.Commands.Handlers
 {
-    public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, ProductResponse>
+    public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Result<ProductResponse>>
     {
         private readonly IProductWriterRepository _productWriterRepository;
         private readonly IProductsReaderRepository _productReaderRepository;
@@ -23,7 +24,7 @@ namespace Application.UseCases.Products.Commands.Handlers
             _productReaderRepository = productReaderRepository;
         }
 
-        public async Task<ProductResponse> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
+        public async Task<Result<ProductResponse>> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
             if (request.Id == Guid.Empty)
                 throw new BusinessLogicException("Cannot update product. Missing or invalid Id");

@@ -27,7 +27,7 @@ namespace Infrastructure.Repositories.Inventories
         public override async Task<IEnumerable<StockItem>> MultipleByValue(IEnumerable<string> values)
         {
             return await _context.StockItems
-                .Where(i => values.Contains(i.SkuCode))
+                .Where(i => values.Contains(i.Product.SkuCode))
                 .ToListAsync();
         }
 

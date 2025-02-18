@@ -1,9 +1,10 @@
 ﻿using Application.Abstractions.Messaging;
 using Application.DTOs.Products;
+using SharedKernel;
 
 namespace Application.UseCases.Products.Commands
 {
-    public class AddProductCommand : ICommand<ProductResponse>
+    public class AddProductCommand : ICommand<Result<ProductResponse>>
     {
         public AddProductCommand(ProductRequest productRequest)
         {

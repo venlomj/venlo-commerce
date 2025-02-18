@@ -9,10 +9,11 @@ using Domain.Entities;
 using Domain.Repositories.Products;
 using Domain.UoW;
 using MediatR;
+using SharedKernel;
 
 namespace Application.UseCases.Products.Commands.Handlers
 {
-    public class AddProductCommandHandler : IRequestHandler<AddProductCommand, ProductResponse>
+    public class AddProductCommandHandler : IRequestHandler<AddProductCommand, Result<ProductResponse>>
     {
         private readonly IProductWriterRepository _productWriterRepository;
         private readonly IProductsReaderRepository _productReaderRepository;
@@ -27,7 +28,7 @@ namespace Application.UseCases.Products.Commands.Handlers
             _productReaderRepository = productReaderRepository;
         }
 
-        public async Task<ProductResponse> Handle(AddProductCommand request, CancellationToken cancellationToken)
+        public async Task<Result<ProductResponse>> Handle(AddProductCommand request, CancellationToken cancellationToken)
         {
             var product = _mapper.Map<Product>(request.ProductRequest);
 
