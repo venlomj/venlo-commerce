@@ -24,9 +24,24 @@ namespace Infrastructure.Repositories.Inventories
             throw new NotImplementedException();
         }
 
+        public async Task<bool> InStock(Guid productId)
+        {
+            return await _context.StockItems
+                .AnyAsync(s => s.ProductId == productId && s.Quantity > 0);
+        }
+
+        public async Task<StockItem?> GetByProductIdAsync(Guid productId)
+        {
+            return await _context.StockItems
+                .Include(s => s.Product)
+                .FirstOrDefaultAsync(s => s.ProductId == productId);
+        }
+
+
         public override async Task<IEnumerable<StockItem>> MultipleByValue(IEnumerable<string> values)
         {
             return await _context.StockItems
+                .Include(p => p.Product)
                 .Where(i => values.Contains(i.Product.SkuCode))
                 .ToListAsync();
         }

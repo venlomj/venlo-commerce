@@ -8,9 +8,7 @@ using Domain.Repositories.Base;
 
 namespace Domain.Repositories.Inventories
 {
-    public interface IInventoriesReaderRepository : IBaseRead<StockItem>
+    public interface IInventoriesWriterRepository : IBaseUpdate<StockItem>
     {
-        Task<bool> InStock(Guid productId);
-        Task<StockItem?> GetByProductIdAsync(Guid productId);
     }
 }

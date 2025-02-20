@@ -3,7 +3,8 @@ using Domain.Repositories.Base;
 
 namespace Domain.Repositories.Products
 {
-    public interface IProductsReaderRepository : IBaseRead<Product>
+    public interface IProductsReaderRepository : IBaseRead<Product>,
+        IBaseVerify<Product>
     {
     }
 }

@@ -11,9 +11,9 @@ using MediatR;
 
 namespace Application.UseCases.Inventories.Queries
 {
-    public class GetInventoriesQuery : IQuery<IEnumerable<InventoryResponse>>, IRequest<IEnumerable<ProductResponse>>
+    public class CheckStockQuery : IQuery<Result<IEnumerable<InventoryResponse>>>
     {
-        public GetInventoriesQuery(IEnumerable<string> skuCodes)
+        public CheckStockQuery(IEnumerable<string> skuCodes)
         {
             SkuCodes = skuCodes;
         }
