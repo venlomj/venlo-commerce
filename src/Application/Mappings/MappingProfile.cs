@@ -3,6 +3,7 @@ using Application.DTOs.Orders;
 using Application.DTOs.Products;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Models;
 
 namespace Application.Mappings
 {
@@ -36,6 +37,15 @@ namespace Application.Mappings
             CreateMap<Order, OrderResponse>()
                 .ForMember(dest => dest.OrderLineItems, opt => opt.MapFrom(src => src.OrderLineItems))
                 .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(src => src.OrderLineItems.Sum(item => item.Price * item.Quantity)));
+
+            CreateMap<OrderResponse, Invoice>()
+                .ForMember(dest => dest.InvoiceNumber, opt => opt.MapFrom(src => src.OrderNumber))
+                .ForMember(dest => dest.DateCreated, opt => opt.MapFrom(src => src.DateCreated))
+                .ForMember(dest => dest.LineItems, opt => opt.MapFrom(src => src.OrderLineItems));
+
+            CreateMap<OrderLineItemResponse, InvoiceLineItem>()
+                .ForMember(dest => dest.UnitPrice, opt => opt.MapFrom(src => src.UnitPrice))
+                .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.UnitPrice * src.Quantity));
         }
     }
 }

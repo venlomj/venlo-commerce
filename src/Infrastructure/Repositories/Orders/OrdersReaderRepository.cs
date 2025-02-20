@@ -30,7 +30,10 @@ namespace Infrastructure.Repositories.Orders
 
         public override Task<Order> GetById(Guid id)
         {
-            throw new NotImplementedException();
+            return _context.Orders
+                .Include(ol => ol.OrderLineItems)
+                .ThenInclude(p => p.Product)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public override Task<IEnumerable<Order>> MultipleByValue(IEnumerable<string> values)

@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Folder Include="UseCases\Inventories\Commands\" />
+    <Folder Include="UseCases\Invoice\Command\Handler\" />
   </ItemGroup>
 
   <PropertyGroup>
