@@ -8,6 +8,7 @@ namespace Application.DTOs.Pictures
 {
     public class PictureResponse
     {
+        public Guid Id { get; set; }
         public string? Name { get; set; }
 
         public required byte[] ImageData { get; set; }

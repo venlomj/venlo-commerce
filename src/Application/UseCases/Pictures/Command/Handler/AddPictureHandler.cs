@@ -1,12 +1,5 @@
-﻿using Application.DTOs.Products;
-using Application.UseCases.Products.Commands;
-using MediatR;
+﻿using MediatR;
 using SharedKernel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Application.DTOs.Pictures;
 using AutoMapper;
 using Domain.Documents;

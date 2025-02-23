@@ -29,8 +29,14 @@ namespace Infrastructure.Repositories.Pictures
 
         public async Task<IEnumerable<TDocument>> GetAll()
         {
-            return await _collection.AsQueryable().ToListAsync();
+            return await _collection.Find(_ => true).ToListAsync();
         }
+
+
+        //public async Task<IEnumerable<TDocument>> GetAll()
+        //{
+        //    return await _collection.AsQueryable().ToListAsync();
+        //}
 
         public virtual TDocument FindById(Guid id)
         {

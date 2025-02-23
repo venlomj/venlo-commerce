@@ -57,6 +57,12 @@ namespace Api.Controllers
             return SendResult(result);
         }
 
+        [HttpGet("with-images")]
+        public async Task<IActionResult> GetProductsWithImages()
+        {
+            var result = await _mediator.Send(new GetProductWithImagesQuery());
+            return Ok(result);
+        }
         /// <summary>
         /// Retrieves products by a list of SKU codes.
         /// </summary>
