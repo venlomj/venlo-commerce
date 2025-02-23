@@ -1,22 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Domain.Entities;
+﻿using Domain.Attributes.Interfaces;
+using Domain.Documents;
 using Domain.Repositories.Inventories;
 using Domain.Repositories.Orders;
+using Domain.Repositories.Pictures;
 using Domain.Repositories.Products;
+using Domain.Settings;
 using Domain.UoW;
-using Infrastructure.Persistence;
+using Infrastructure.Persistence.SQL;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.Inventories;
 using Infrastructure.Repositories.Orders;
+using Infrastructure.Repositories.Pictures;
 using Infrastructure.Repositories.Products;
 using Infrastructure.UoW;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using MongoDB.Driver;
 
 namespace Infrastructure
 {
@@ -37,6 +38,9 @@ namespace Infrastructure
             {
                 options.UseSqlServer(configuration.GetConnectionString("VenloCommerceConnection"));
             });
+
+            // MongoDB Repositories
+            services.AddTransient<IMongoRepository<ProductImage>, MongoRepository<ProductImage>>();
 
             return services;
         }

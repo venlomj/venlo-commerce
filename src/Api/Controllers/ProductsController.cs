@@ -1,5 +1,7 @@
 ﻿using Api.Controllers.Base;
+using Application.DTOs.Pictures;
 using Application.DTOs.Products;
+using Application.UseCases.Pictures.Command;
 using Application.UseCases.Products.Commands;
 using Application.UseCases.Products.Queries;
 using MediatR;

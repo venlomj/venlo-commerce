@@ -36,7 +36,7 @@ namespace Domain.Utils
                     var headerTable = new PdfPTable(2) { WidthPercentage = 100 };
                     headerTable.SetWidths(new float[] { 50, 50 });
 
-                    var companyInfo = new Paragraph("Venlo Commerce\nKerstraat 3\n2430 AB, Laakdal\nBTW-nummer: BE1234567890", normalFont);
+                    var companyInfo = new Paragraph("Venlo Commerce\nKerkstraat 3\n2430 AB, Laakdal\nBTW-nummer: BE1234567890", normalFont);
                     var invoiceInfo = new Paragraph($"Factuurnummer: {invoice.InvoiceNumber}\nDatum: {invoice.DateCreated:dd/MM/yyyy}\nVervaldatum: {invoice.DateCreated.AddDays(30):dd/MM/yyyy}", normalFont);
 
                     var cell1 = new PdfPCell(companyInfo) { Border = Rectangle.NO_BORDER };

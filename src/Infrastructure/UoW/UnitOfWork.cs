@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.UoW;
-using Infrastructure.Persistence;
+using Infrastructure.Persistence.SQL;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Infrastructure.UoW

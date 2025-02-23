@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Repositories.Orders;
-using Infrastructure.Persistence;
+using Infrastructure.Persistence.SQL;
 using Infrastructure.Repositories.Base;
 using Microsoft.EntityFrameworkCore;
 

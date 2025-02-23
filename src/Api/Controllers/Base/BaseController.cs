@@ -9,7 +9,15 @@ namespace Api.Controllers.Base
         {
             return result.Match<IActionResult>(
                 onSuccess: response => Ok(response),
-                onFailure: ex => BadRequest(new { message = ex.Message }),
+                onFailure: ex =>
+                {
+                    if (ex is Domain.Exceptions.BusinessLogicException)
+                    {
+                        return UnprocessableEntity(new { message = ex.Message });
+                    }
+
+                    return BadRequest(new { message = ex.Message });
+                },
                 onNull: () => NotFound(new {message = "Not found. "})
             );
         }

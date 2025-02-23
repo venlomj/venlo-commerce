@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Messaging;
+using Application.DTOs.Pictures;
 using Application.DTOs.Products;
 using SharedKernel;
 

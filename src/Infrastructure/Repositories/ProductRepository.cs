@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
 using Domain.Repositories.Products;
-using Infrastructure.Persistence;
+using Infrastructure.Persistence.SQL;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories

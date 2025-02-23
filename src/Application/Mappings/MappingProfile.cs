@@ -1,9 +1,12 @@
 ﻿using Application.DTOs.Inventories;
 using Application.DTOs.Orders;
+using Application.DTOs.Pictures;
 using Application.DTOs.Products;
 using AutoMapper;
+using Domain.Documents;
 using Domain.Entities;
 using Domain.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Mappings
 {
@@ -13,6 +16,13 @@ namespace Application.Mappings
         {
             CreateMap<Product, ProductResponse>();
             CreateMap<ProductRequest, Product>();
+
+            // Mapping for IFormFile to byte[]
+            CreateMap<IFormFile, byte[]>().ConvertUsing<FormFileToByteArrayConverter>();
+
+            // Your other mappings
+            CreateMap<PictureRequest, ProductImage>();
+            CreateMap<ProductImage, PictureResponse>();
 
             // Inventory Mappings
             CreateMap<StockItem, InventoryResponse>();
