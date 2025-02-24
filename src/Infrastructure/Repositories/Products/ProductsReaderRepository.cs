@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using System.Linq.Expressions;
+using Domain.Entities;
 using Domain.Repositories.Products;
 using Infrastructure.Persistence.SQL;
 using Infrastructure.Repositories.Base;
@@ -29,6 +30,29 @@ namespace Infrastructure.Repositories.Products
         {
             return await _context.Products
                 .Where(p => values.Contains(p.SkuCode))
+                .ToListAsync();
+        }
+
+        public override async Task<int> CountAsync(Expression<Func<Product, bool>>? predicate = null)
+        {
+            return predicate == null ? 
+                await _context.Products.CountAsync()
+                : await _context.Products.CountAsync(predicate);
+        }
+
+        public override async Task<List<Product>> GetPagedAsync(int page, int pageSize, Expression<Func<Product, bool>>? filter = null, Func<IQueryable<Product>, IOrderedQueryable<Product>>? orderBy = null)
+        {
+            IQueryable<Product> query = _context.Products;
+
+            if (filter != null)
+                query = query.Where(filter);
+
+            if (orderBy != null)
+                query = orderBy(query);
+
+            return await query
+                .Skip((page -1 ) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
         }
 

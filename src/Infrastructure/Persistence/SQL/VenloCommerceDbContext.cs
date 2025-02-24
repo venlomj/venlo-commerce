@@ -10,5 +10,6 @@ public class VenloCommerceDbContext : DbContext
     public DbSet<Product> Products { get; set; }
     public DbSet<StockItem> StockItems { get; set; }
     public DbSet<Order> Orders { get; set; }
-    public DbSet<OrderLineItem> orderLineItems { get; set; }
+    public DbSet<OrderLineItem> OrderLineItems { get; set; }
+    public DbSet<Category> Categories { get; set; }
 }

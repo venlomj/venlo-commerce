@@ -28,7 +28,20 @@ namespace Api.Controllers
         public async Task<IActionResult> GetProducts()
         {
             var result = await _mediator.Send(new GetProductsQuery());
-            return Ok(result);
+            return SendResult(result);
+        }
+
+        /// <summary>
+        /// Retrieves a paginated list of products.
+        /// </summary>
+        /// <param name="page">The page number.</param>
+        /// <param name="pageSize">The number of products per page.</param>
+        /// <returns>A paginated list of products.</returns>
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetProductsPaged([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        {
+            var result = await _mediator.Send(new GetProductsPagedQuery(page, pageSize));
+            return SendResult(result);
         }
 
         /// <summary>
@@ -55,13 +68,6 @@ namespace Api.Controllers
             var result = await _mediator.Send(new GetProductQuery(id));
 
             return SendResult(result);
-        }
-
-        [HttpGet("with-images")]
-        public async Task<IActionResult> GetProductsWithImages()
-        {
-            var result = await _mediator.Send(new GetProductWithImagesQuery());
-            return Ok(result);
         }
         /// <summary>
         /// Retrieves products by a list of SKU codes.

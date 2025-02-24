@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
@@ -37,6 +38,16 @@ namespace Infrastructure.Repositories.Orders
         }
 
         public override Task<IEnumerable<Order>> MultipleByValue(IEnumerable<string> values)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<int> CountAsync(Expression<Func<Order, bool>>? predicate = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<List<Order>> GetPagedAsync(int page, int pageSize, Expression<Func<Order, bool>>? filter = null, Func<IQueryable<Order>, IOrderedQueryable<Order>>? orderBy = null)
         {
             throw new NotImplementedException();
         }

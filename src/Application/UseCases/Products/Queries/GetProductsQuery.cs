@@ -2,4 +2,7 @@
 using Application.DTOs.Products;
 using SharedKernel;
 
-public sealed record GetProductsQuery : IQuery<Result<IEnumerable<ProductResponse>>>;
+namespace Application.UseCases.Products.Queries
+{
+    public class GetProductsQuery : IQuery<Result<IEnumerable<ProductResponse>>>;
+}

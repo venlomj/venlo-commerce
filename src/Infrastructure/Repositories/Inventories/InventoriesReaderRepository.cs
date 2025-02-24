@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using System.Linq.Expressions;
+using Domain.Entities;
 using Domain.Repositories.Inventories;
 using Infrastructure.Persistence.SQL;
 using Infrastructure.Repositories.Base;
@@ -44,6 +45,16 @@ namespace Infrastructure.Repositories.Inventories
                 .Include(p => p.Product)
                 .Where(i => values.Contains(i.Product.SkuCode))
                 .ToListAsync();
+        }
+
+        public override Task<int> CountAsync(Expression<Func<StockItem, bool>>? predicate = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<List<StockItem>> GetPagedAsync(int page, int pageSize, Expression<Func<StockItem, bool>>? filter = null, Func<IQueryable<StockItem>, IOrderedQueryable<StockItem>>? orderBy = null)
+        {
+            throw new NotImplementedException();
         }
 
         public override Task<bool> Exists(Guid id)

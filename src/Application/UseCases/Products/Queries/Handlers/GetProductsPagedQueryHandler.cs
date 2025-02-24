@@ -1,27 +1,21 @@
-﻿using Application.DTOs.Products;
+﻿using Application.DTOs.Pictures;
+using Application.DTOs.Products;
 using AutoMapper;
+using Domain.Documents;
+using Domain.Repositories.Pictures;
 using Domain.Repositories.Products;
 using MediatR;
 using SharedKernel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.DTOs.Pictures;
-using Domain.Documents;
-using Domain.Repositories.Pictures;
-using Domain.Exceptions;
 
 namespace Application.UseCases.Products.Queries.Handlers
 {
-    public class GetProductWithImagesQueryHandler : IRequestHandler<GetProductWithImagesQuery, Result<IEnumerable<ProductResponse>>>
+    public class GetProductsPagedQueryHandler : IRequestHandler<GetProductsPagedQuery, Result<PagedResult<ProductResponse>>>
     {
         private readonly IProductsReaderRepository _productsReader;
         private readonly IMongoRepository<ProductImage> _productImageRepository;
         private readonly IMapper _mapper;
 
-        public GetProductWithImagesQueryHandler(IProductsReaderRepository productsReader,
+        public GetProductsPagedQueryHandler(IProductsReaderRepository productsReader,
             IMapper mapper, IMongoRepository<ProductImage> productImageRepository)
         {
             _productsReader = productsReader;
@@ -29,9 +23,10 @@ namespace Application.UseCases.Products.Queries.Handlers
             _productImageRepository = productImageRepository;
         }
 
-        public async Task<Result<IEnumerable<ProductResponse>>> Handle(GetProductWithImagesQuery request, CancellationToken cancellationToken)
+        public async Task<Result<PagedResult<ProductResponse>>> Handle(GetProductsPagedQuery request, CancellationToken cancellationToken)
         {
-            var products = await _productsReader.GetAll();
+            var totalCount = await _productsReader.CountAsync();
+            var products = await _productsReader.GetPagedAsync(request.Page, request.PageSize);
 
             var images = await _productImageRepository.GetAll();
 
@@ -48,9 +43,11 @@ namespace Application.UseCases.Products.Queries.Handlers
                 productResponse.Images = _mapper.Map<List<PictureResponse>>(productImages);
 
                 return productResponse;
-            });
+            }).ToList(); // Ensure it's a List<ProductResponse>
 
-            return new Result<IEnumerable<ProductResponse>>(productResponses);
+            // Return a properly structured Result<PagedResult<ProductResponse>>
+            return new Result<PagedResult<ProductResponse>>(new PagedResult<ProductResponse>(productResponses, totalCount, request.Page, request.PageSize));
         }
+
     }
 }

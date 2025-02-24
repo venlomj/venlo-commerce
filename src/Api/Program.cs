@@ -3,6 +3,7 @@ using Application;
 using Domain.Attributes.Interfaces;
 using Domain.Settings;
 using Infrastructure;
+using Infrastructure.Persistence.SQL;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,5 +32,11 @@ app.UseSwaggerDocumentation();
 
 app.UseHttpsRedirection();
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await DbSeeder.SeedAsync(services);
+}
 
 app.Run();
