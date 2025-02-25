@@ -45,7 +45,7 @@ The API also integrates **AutoMapper** for object-to-object mapping and **Fluent
 1. **Clone the Repository**:
 
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/venlomj/venlo-commerce.git
     ```
 
 2. **Install Dependencies**:
