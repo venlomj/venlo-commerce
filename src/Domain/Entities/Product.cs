@@ -1,5 +1,4 @@
 ﻿using Domain.Common;
-using Domain.Documents;
 
 namespace Domain.Entities;
 
