@@ -1,198 +1,309 @@
-# E-commerce API Endpoints
+# VenloCommerce API
 
-## Orders Endpoints
+## Description
 
-### `POST /api/orders/{id:guid}`
-Place a new order.
+This is a robust e-commerce API built using a clean architecture approach. The API allows interaction with product, order, and image management systems. It supports product listing, order placement, image upload for products, and invoicing functionalities. The application uses **MongoDB** for storing product images as binary files, and **Microsoft SQL Server** for storing other models like products, categories, orders, and stock items.
 
-#### Request:
-- **URL Parameter**: `id` (Guid) - The unique identifier of the product.
-- **Body**: `OrderRequest` - Contains order details (e.g., quantity).
-
-#### Response:
-- Status: `200 OK`
-- Body: Order result (success or failure)
+The API also integrates **AutoMapper** for object-to-object mapping and **FluentValidation** for validation of inputs.
 
 ---
 
-### `GET /api/orders`
-Retrieve all orders.
+## Table of Contents
 
-#### Response:
-- Status: `200 OK`
-- Body: List of all orders
-
----
-
-### `GET /api/orders/{id:guid}`
-Retrieve a specific order by ID.
-
-#### Request:
-- **URL Parameter**: `id` (Guid) - The unique identifier of the order.
-
-#### Response:
-- Status: `200 OK`
-- Body: Order details (Invoice and other details)
+- [Features](#features)
+- [Technologies](#technologies)
+- [Setup](#setup)
+- [API Endpoints](#api-endpoints)
+- [Models](#models)
+- [Contributing](#contributing)
 
 ---
 
-## Products Endpoints
+## Features
 
-### `GET /api/products`
-Retrieve a list of all products.
-
-#### Response:
-- Status: `200 OK`
-- Body: List of products
+- **Order Management**: Place orders, retrieve orders, and view invoices.
+- **Product Management**: Add, retrieve, update, and delete products. Retrieve products by SKU code.
+- **Image Management**: Upload product images and associate them with products.
+- **Category Management**: Manage product categories.
 
 ---
 
-### `GET /api/products/paged`
-Retrieve a paginated list of products.
+## Technologies
 
-#### Request:
-- **Query Parameters**: `page` (int) - The page number. (Default: 1)
-  `pageSize` (int) - The number of products per page. (Default: 10)
-
-#### Response:
-- Status: `200 OK`
-- Body: Paginated list of products
-
----
-
-### `POST /api/products`
-Add a new product.
-
-#### Request:
-- **Body**: `ProductRequest` - Contains product details (e.g., name, price, description).
-
-#### Response:
-- Status: `201 Created`
-- Body: The created product
+- **.NET 9** for backend development
+- **MongoDB** for storing product images as binary files
+- **Microsoft SQL Server** for other models (products, categories, orders, etc.)
+- **AutoMapper** for object mapping
+- **FluentValidation** for validating input data
+- **MediateR** for handling commands and queries
+- **Swagger** for API documentation
 
 ---
 
-### `GET /api/products/{id:guid}`
-Retrieve a specific product by ID.
+## Setup
 
-#### Request:
-- **URL Parameter**: `id` (Guid) - The unique identifier of the product.
+1. **Clone the Repository**:
 
-#### Response:
-- Status: `200 OK`
-- Body: Product details
+    ```bash
+    git clone <repository-url>
+    ```
 
----
+2. **Install Dependencies**:
 
-### `GET /api/products/sku`
-Retrieve products by a list of SKU codes.
+    - .NET SDK 9
+    - MongoDB for storing images
+    - Microsoft SQL Server for relational data
 
-#### Request:
-- **Query Parameter**: `skuCodes` (List of strings) - A list of SKU codes to search for.
+3. **Set up Configuration**:
 
-#### Response:
-- Status: `200 OK`
-- Body: List of products matching the SKU codes
+    Update the `appsettings.json` for the appropriate connection strings (SQL Server and MongoDB).
 
----
+4. **Run the Application**:
 
-### `PUT /api/products/{id:guid}`
-Update a specific product by ID.
-
-#### Request:
-- **URL Parameter**: `id` (Guid) - The unique identifier of the product.
-- **Body**: `ProductRequest` - Contains updated product details.
-
-#### Response:
-- Status: `200 OK`
-- Body: The updated product
+    ```bash
+    dotnet run
+    ```
 
 ---
 
-### `DELETE /api/products/{id:guid}`
-Delete a specific product by ID.
+## API Endpoints
 
-#### Request:
-- **URL Parameter**: `id` (Guid) - The unique identifier of the product.
+### Orders Endpoints
 
-#### Response:
-- Status: `200 OK`
-- Body: Confirmation message (Success/Failure)
+- **Place an Order**
 
----
+    `POST /api/orders/{id:guid}`
 
-## Pictures Endpoints
+    Request Body:
+    ```json
+    {
+        "Quantity": 5
+    }
+    ```
 
-### `POST /api/pictures/{productId:guid}`
-Upload an image for a specific product.
+    Response:
+    ```json
+    {
+        "OrderNumber": "ORD12345",
+        "TotalPrice": 150.00
+    }
+    ```
 
-#### Request:
-- **URL Parameter**: `productId` (Guid) - The unique identifier of the product.
-- **Body**: `PictureRequest` - Contains image data and other picture-related information.
+- **Get Orders**
 
-#### Response:
-- Status: `200 OK`
-- Body: Result of image upload (success/failure)
+    `GET /api/orders`
 
----
+    Response:
+    ```json
+    [
+        {
+            "OrderNumber": "ORD12345",
+            "TotalPrice": 150.00
+        }
+    ]
+    ```
 
-## Stock Endpoints
+- **Get Order by ID**
 
-### `GET /api/stock`
-Retrieve the stock information for all products.
+    `GET /api/orders/{id:guid}`
 
-#### Response:
-- Status: `200 OK`
-- Body: List of stock items (Quantity, Product, etc.)
+    Response:
+    ```json
+    {
+        "OrderNumber": "ORD12345",
+        "TotalPrice": 150.00,
+        "OrderLineItems": [
+            {
+                "ProductId": "some-guid",
+                "Quantity": 5,
+                "Price": 30.00
+            }
+        ]
+    }
+    ```
 
----
+- **Download Invoice**
 
-### `GET /api/stock/{productId:guid}`
-Retrieve stock information for a specific product.
+    `GET /api/orders/{id:guid}/invoice`
 
-#### Request:
-- **URL Parameter**: `productId` (Guid) - The unique identifier of the product.
-
-#### Response:
-- Status: `200 OK`
-- Body: Stock details for the product
-
----
-
-### `POST /api/stock/{productId:guid}`
-Add stock for a specific product.
-
-#### Request:
-- **URL Parameter**: `productId` (Guid) - The unique identifier of the product.
-- **Body**: `StockItemRequest` - Contains stock details (e.g., quantity).
-
-#### Response:
-- Status: `200 OK`
-- Body: Confirmation message (Success/Failure)
-
----
-
-### `PUT /api/stock/{productId:guid}`
-Update stock for a specific product.
-
-#### Request:
-- **URL Parameter**: `productId` (Guid) - The unique identifier of the product.
-- **Body**: `StockItemRequest` - Contains updated stock details.
-
-#### Response:
-- Status: `200 OK`
-- Body: The updated stock information
+    Response:
+    - Returns PDF file of the invoice.
 
 ---
 
-### `DELETE /api/stock/{productId:guid}`
-Delete stock for a specific product.
+### Products Endpoints
 
-#### Request:
-- **URL Parameter**: `productId` (Guid) - The unique identifier of the product.
+- **Get All Products**
 
-#### Response:
-- Status: `200 OK`
-- Body: Confirmation message (Success/Failure)
+    `GET /api/products`
+
+    Response:
+    ```json
+    [
+        {
+            "Id": "some-guid",
+            "Name": "Product 1",
+            "Description": "A sample product",
+            "Price": 50.00
+        }
+    ]
+    ```
+
+- **Get Product by ID**
+
+    `GET /api/products/{id:guid}`
+
+    Response:
+    ```json
+    {
+        "Id": "some-guid",
+        "Name": "Product 1",
+        "Description": "A sample product",
+        "Price": 50.00
+    }
+    ```
+
+- **Get Products by SKU**
+
+    `GET /api/products/sku?skuCodes=sku1,sku2`
+
+    Response:
+    ```json
+    [
+        {
+            "Id": "some-guid",
+            "SkuCode": "sku1",
+            "Name": "Product 1",
+            "Description": "A sample product"
+        }
+    ]
+    ```
+
+- **Add a Product**
+
+    `POST /api/products`
+
+    Request Body:
+    ```json
+    {
+        "Name": "New Product",
+        "Description": "Description of new product",
+        "Price": 75.00,
+        "CategoryId": "some-category-guid"
+    }
+    ```
+
+    Response:
+    ```json
+    {
+        "Id": "new-product-guid",
+        "Name": "New Product",
+        "Price": 75.00
+    }
+    ```
+
+- **Update Product**
+
+    `PUT /api/products/{id:guid}`
+
+    Request Body:
+    ```json
+    {
+        "Name": "Updated Product",
+        "Description": "Updated description",
+        "Price": 80.00
+    }
+    ```
+
+- **Delete Product**
+
+    `DELETE /api/products/{id:guid}`
+
+    Response:
+    ```json
+    {
+        "Message": "Product deleted successfully."
+    }
+    ```
 
 ---
+
+### Pictures Endpoints
+
+- **Upload Image for Product**
+
+    `POST /api/pictures/{productId:guid}`
+
+    Request Body:
+    ```json
+    {
+        "ImageData": "binary-image-data",
+        "Name": "Product Image"
+    }
+    ```
+
+    Response:
+    ```json
+    {
+        "Message": "Image uploaded successfully."
+    }
+    ```
+
+---
+
+### Models
+
+#### Product
+
+- **Id**: `Guid` (Unique identifier)
+- **SkuCode**: `string` (Product SKU code)
+- **Name**: `string` (Product name)
+- **Description**: `string` (Product description)
+- **Price**: `decimal` (Product price)
+- **CategoryId**: `Guid` (Foreign key to Category)
+
+#### Category
+
+- **Id**: `Guid` (Unique identifier)
+- **Name**: `string` (Category name)
+- **Description**: `string` (Category description)
+- **Products**: `List<Product>` (Products in this category)
+
+#### Order
+
+- **Id**: `Guid` (Unique identifier)
+- **OrderNumber**: `string` (Unique order number)
+- **OrderLineItems**: `List<OrderLineItem>` (Items in the order)
+
+#### OrderLineItem
+
+- **Id**: `Guid` (Unique identifier)
+- **Price**: `decimal` (Item price)
+- **Quantity**: `int` (Quantity ordered)
+- **ProductId**: `Guid` (Product reference)
+- **OrderId**: `Guid` (Order reference)
+
+#### StockItem
+
+- **Id**: `Guid` (Unique identifier)
+- **Quantity**: `int` (Quantity in stock)
+- **ProductId**: `Guid` (Product reference)
+
+#### Picture (MongoDB)
+
+- **Id**: `Guid` (Unique identifier)
+- **ProductId**: `Guid` (Product reference)
+- **ImageData**: `byte[]` (Image data in binary format)
+- **Name**: `string` (Image name)
+
+---
+
+## Contributing
+
+Feel free to open issues, fork the repository, and submit pull requests.
+
+---
+
+## License
+
+This project is licensed under the MIT License.
