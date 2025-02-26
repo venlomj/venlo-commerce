@@ -10,18 +10,12 @@ using Infrastructure.Repositories.Base;
 
 namespace Infrastructure.Repositories.Orders
 {
-    public class OrderWriterRepository : BaseWriter<Order>,
+    public class OrderWriterRepository(VenloCommerceDbContext context) : BaseWriter<Order>,
         IOrderWriterRepository
     {
-        private readonly VenloCommerceDbContext _context;
-        public OrderWriterRepository(VenloCommerceDbContext context)
-        {
-            _context = context;
-        }
-
         public override async Task<Guid> Add(Order entity)
         {
-            await _context.Orders.AddAsync(entity);
+            await context.Orders.AddAsync(entity);
             return entity.Id;
         }
 

@@ -10,14 +10,9 @@ using Infrastructure.Repositories.Base;
 
 namespace Infrastructure.Repositories.Inventories
 {
-    public class InventoriesWriterRepository : BaseWriter<StockItem>,
+    public class InventoriesWriterRepository(VenloCommerceDbContext context) : BaseWriter<StockItem>,
         IInventoriesWriterRepository
     {
-        private readonly VenloCommerceDbContext _context;
-        public InventoriesWriterRepository(VenloCommerceDbContext context)
-        {
-            _context = context;
-        }
         public override Task<Guid> Add(StockItem entity)
         {
             throw new NotImplementedException();
@@ -25,7 +20,7 @@ namespace Infrastructure.Repositories.Inventories
 
         public override Task<StockItem> Update(StockItem entity)
         {
-            _context.StockItems.Update(entity);
+            context.StockItems.Update(entity);
             return Task.FromResult(entity);
         }
 

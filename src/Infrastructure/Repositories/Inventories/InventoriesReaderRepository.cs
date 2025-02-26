@@ -7,15 +7,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories.Inventories
 {
-    public class InventoriesReaderRepository : BaseReader<StockItem>,
+    public class InventoriesReaderRepository(VenloCommerceDbContext context) : BaseReader<StockItem>,
         IInventoriesReaderRepository
     {
-        private readonly VenloCommerceDbContext _context;
-        public InventoriesReaderRepository(VenloCommerceDbContext context)
-        {
-            _context = context;
-        }
         public override Task<IEnumerable<StockItem>> GetAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<IEnumerable<StockItem>> GetFiltered(Expression<Func<StockItem, bool>>? filter = null, Func<IQueryable<StockItem>, IOrderedQueryable<StockItem>>? orderBy = null, int page = 1, int pageSize = 10)
         {
             throw new NotImplementedException();
         }
@@ -27,13 +27,13 @@ namespace Infrastructure.Repositories.Inventories
 
         public async Task<bool> InStock(Guid productId)
         {
-            return await _context.StockItems
+            return await context.StockItems
                 .AnyAsync(s => s.ProductId == productId && s.Quantity > 0);
         }
 
         public async Task<StockItem?> GetByProductIdAsync(Guid productId)
         {
-            return await _context.StockItems
+            return await context.StockItems
                 .Include(s => s.Product)
                 .FirstOrDefaultAsync(s => s.ProductId == productId);
         }
@@ -41,7 +41,7 @@ namespace Infrastructure.Repositories.Inventories
 
         public override async Task<IEnumerable<StockItem>> MultipleByValue(IEnumerable<string> values)
         {
-            return await _context.StockItems
+            return await context.StockItems
                 .Include(p => p.Product)
                 .Where(i => values.Contains(i.Product.SkuCode))
                 .ToListAsync();

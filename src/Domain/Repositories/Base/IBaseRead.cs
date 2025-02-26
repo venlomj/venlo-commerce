@@ -11,6 +11,12 @@ namespace Domain.Repositories.Base
       where T : class, new()
     {
         Task<IEnumerable<T>> GetAll();
+        Task<IEnumerable<T>> GetFiltered(
+            Expression<Func<T, bool>>? filter = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+            int page = 1,
+            int pageSize = 10
+        );
         Task<T> GetById(Guid id);
         Task<IEnumerable<T>> MultipleByValue(IEnumerable<string> values);
         Task<int> CountAsync(Expression<Func<T, bool>>? predicate = null);

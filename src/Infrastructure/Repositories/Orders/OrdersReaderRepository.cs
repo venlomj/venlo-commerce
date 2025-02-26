@@ -12,26 +12,41 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories.Orders
 {
-    public class OrdersReaderRepository : BaseReader<Order>,
+    public class OrdersReaderRepository(VenloCommerceDbContext context) : BaseReader<Order>,
         IOrdersReaderRepository
     {
-        private readonly VenloCommerceDbContext _context;
-        public OrdersReaderRepository(VenloCommerceDbContext context)
-        {
-            _context = context;
-        }
-
         public override async Task<IEnumerable<Order>> GetAll()
         {
-           return await _context.Orders
+           return await context.Orders
                 .Include(x => x.OrderLineItems)
                 .ThenInclude(ol => ol.Product)
                 .ToListAsync();
         }
 
+        public override async Task<IEnumerable<Order>> GetFiltered(
+            Expression<Func<Order, bool>>? filter = null,
+            Func<IQueryable<Order>, IOrderedQueryable<Order>>? orderBy = null,
+            int page = 1,
+            int pageSize = 10)
+        {
+            IQueryable<Order> query = context.Orders.Include(o => o.OrderLineItems)
+                .ThenInclude(oli => oli.Product);
+
+            if (filter != null)
+                query = query.Where(filter);
+
+            query = orderBy != null ? orderBy(query) : query.OrderBy(o => o.DateCreated); 
+
+            return await query.Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+
+
         public override Task<Order> GetById(Guid id)
         {
-            return _context.Orders
+            return context.Orders
                 .Include(ol => ol.OrderLineItems)
                 .ThenInclude(p => p.Product)
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -42,19 +57,32 @@ namespace Infrastructure.Repositories.Orders
             throw new NotImplementedException();
         }
 
-        public override Task<int> CountAsync(Expression<Func<Order, bool>>? predicate = null)
+        public override async Task<int> CountAsync(Expression<Func<Order, bool>>? predicate = null)
         {
-            throw new NotImplementedException();
+            return predicate == null ?
+                await context.Orders.CountAsync()
+                : await context.Orders.CountAsync(predicate);
         }
 
-        public override Task<List<Order>> GetPagedAsync(int page, int pageSize, Expression<Func<Order, bool>>? filter = null, Func<IQueryable<Order>, IOrderedQueryable<Order>>? orderBy = null)
+        public override async Task<List<Order>> GetPagedAsync(int page, int pageSize, Expression<Func<Order, bool>>? filter = null, Func<IQueryable<Order>, IOrderedQueryable<Order>>? orderBy = null)
         {
-            throw new NotImplementedException();
+            IQueryable<Order> query = context.Orders;
+
+            if (filter != null)
+                query = query.Where(filter);
+
+            if (orderBy != null)
+                query = orderBy(query);
+
+            return await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
 
-        public override Task<bool> Exists(Guid id)
+        public override async Task<bool> Exists(Guid id)
         {
-            throw new NotImplementedException();
+            return await context.Orders.AnyAsync(x => x.Id == id);
         }
     }
 }

@@ -2,31 +2,40 @@
 using Application.DTOs.Products;
 using AutoMapper;
 using Domain.Documents;
+using Domain.Entities;
+using Domain.Exceptions;
 using Domain.Repositories.Pictures;
 using Domain.Repositories.Products;
 using MediatR;
 using SharedKernel;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Application.UseCases.Products.Queries.Handlers
 {
-    public class GetProductsPagedQueryHandler : IRequestHandler<GetProductsPagedQuery, Result<PagedResult<ProductResponse>>>
+    public class GetProductsByCategoryQueryHandler : IRequestHandler<GetProductsByCategoryQuery, Result<IEnumerable<ProductResponse>>>
     {
         private readonly IProductsReaderRepository _productsReader;
-        private readonly IMongoRepository<ProductImage> _productImageRepository;
         private readonly IMapper _mapper;
+        private IMongoRepository<ProductImage> _productImageRepository;
 
-        public GetProductsPagedQueryHandler(IProductsReaderRepository productsReader,
-            IMapper mapper, IMongoRepository<ProductImage> productImageRepository)
+        public GetProductsByCategoryQueryHandler(IProductsReaderRepository productsReader, IMapper mapper, IMongoRepository<ProductImage> productImageRepository)
         {
             _productsReader = productsReader;
             _mapper = mapper;
             _productImageRepository = productImageRepository;
         }
 
-        public async Task<Result<PagedResult<ProductResponse>>> Handle(GetProductsPagedQuery request, CancellationToken cancellationToken)
+        public async Task<Result<IEnumerable<ProductResponse>>> Handle(GetProductsByCategoryQuery request, CancellationToken cancellationToken)
         {
-            var totalCount = await _productsReader.CountAsync();
-            var products = await _productsReader.GetPagedAsync(request.Page, request.PageSize);
+            var products = await _productsReader.GetByCategoryIdAsync(request.CategoryId);
+            if (products == null)
+            {
+                return new BusinessLogicException($"No Products found for the category with id, {request.CategoryId}.");
+            }
 
             var images = await _productImageRepository.GetAll();
 
@@ -43,11 +52,9 @@ namespace Application.UseCases.Products.Queries.Handlers
                 productResponse.Images = _mapper.Map<List<PictureResponse>>(productImages);
 
                 return productResponse;
-            }).ToList(); // Ensure it's a List<ProductResponse>
+            });
 
-            // Return a properly structured Result<PagedResult<ProductResponse>>
-            return new Result<PagedResult<ProductResponse>>(new PagedResult<ProductResponse>(productResponses, totalCount, request.Page, request.PageSize));
+            return new Result<IEnumerable<ProductResponse>>(productResponses);
         }
-
     }
 }

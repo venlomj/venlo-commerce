@@ -29,10 +29,33 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetOrders()
+        public async Task<IActionResult> GetOrders(
+            [FromQuery] string? searchTerm,
+            [FromQuery] DateTime? startDate,
+            [FromQuery] DateTime? endDate,
+            [FromQuery] decimal? minTotalAmount,
+            [FromQuery] decimal? maxTotalAmount,
+            [FromQuery] string? sortBy,
+            [FromQuery] string? sortOrder,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var result = await _mediator.Send(new GetOrdersQuery());
-            return Ok(result);
+            var query = new GetOrdersQuery
+            {
+                SearchTerm = searchTerm,
+                StartDate = startDate,
+                EndDate = endDate,
+                MinTotalAmount = minTotalAmount,
+                MaxTotalAmount = maxTotalAmount,
+                SortBy = sortBy,
+                SortOrder = sortOrder,
+                Page = page,
+                PageSize = pageSize
+            };
+
+            var result = await _mediator.Send(query);
+            // Return the result
+            return SendResult(result);
         }
 
         [HttpGet("{id:guid}")]

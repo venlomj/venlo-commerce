@@ -31,11 +31,6 @@ namespace Application.Mappings
             //    .ForMember(dest => dest.IsInStock, opt => opt.MapFrom(src => src.Quantity > 0));
             // CreateMap<Product, InventoryResponse>();
 
-            // Order Mappings
-            CreateMap<Order, OrderResponse>();
-            CreateMap<OrderLineItem, OrderLineItemDto>();
-            //.ForMember(dest => dest.SkuCode, opt => opt.MapFrom(src => src.Product.SkuCode));
-
             // Mapping OrderLineItem to OrderLineItemResponse
             CreateMap<OrderLineItem, OrderLineItemResponse>()
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))

@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.DTOs.Pictures;
+﻿using Application.DTOs.Pictures;
 using Application.DTOs.Products;
 using AutoMapper;
 using Domain.Documents;
-using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Repositories.Pictures;
 using Domain.Repositories.Products;

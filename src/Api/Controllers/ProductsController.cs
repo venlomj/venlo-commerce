@@ -11,38 +11,49 @@ namespace Api.Controllers
 {
     [Route("api/products")]
     [ApiController]
-    public class ProductsController : BaseController
+    public class ProductsController(IMediator mediator) : BaseController
     {
-        private readonly IMediator _mediator;
-
-        public ProductsController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
+        private readonly IMediator _mediator = mediator;
 
         /// <summary>
-        /// Retrieves a list of all products.
-        /// </summary>
-        /// <returns>A list of products.</returns>
-        [HttpGet]
-        public async Task<IActionResult> GetProducts()
-        {
-            var result = await _mediator.Send(new GetProductsQuery());
-            return SendResult(result);
-        }
-
-        /// <summary>
-        /// Retrieves a paginated list of products.
+        /// Retrieves a paginated and filtered list of products.
         /// </summary>
         /// <param name="page">The page number.</param>
         /// <param name="pageSize">The number of products per page.</param>
+        /// <param name="searchTerm">Search term to filter products by name or description.</param>
+        /// <param name="category">Category to filter products by.</param>
+        /// <param name="minPrice">Minimum price to filter products by.</param>
+        /// <param name="maxPrice">Maximum price to filter products by.</param>
+        /// <param name="sortBy">Field to sort by (e.g., "name" or "price").</param>
+        /// <param name="sortOrder">Order for sorting ("asc" or "desc").</param>
         /// <returns>A paginated list of products.</returns>
-        [HttpGet("paged")]
-        public async Task<IActionResult> GetProductsPaged([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        [HttpGet]
+        public async Task<IActionResult> GetProducts(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] string? category = null,
+            [FromQuery] decimal? minPrice = null,
+            [FromQuery] decimal? maxPrice = null,
+            [FromQuery] string? sortBy = null,
+            [FromQuery] string? sortOrder = null)
         {
-            var result = await _mediator.Send(new GetProductsPagedQuery(page, pageSize));
+            // Send query with the new parameters
+            var result = await _mediator.Send(new GetProductsQuery(page, pageSize, searchTerm, category, minPrice, maxPrice, sortBy, sortOrder));
+
+            // Return the result
             return SendResult(result);
         }
+
+
+
+        [HttpGet("category/{categoryId:guid}")]
+        public async Task<IActionResult> GetProductsByCategory([FromRoute] Guid categoryId)
+        {
+            var result = await _mediator.Send(new GetProductsByCategoryQuery(categoryId));
+            return SendResult(result);
+        }
+
 
         /// <summary>
         /// Adds a new product.
