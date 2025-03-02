@@ -11,12 +11,12 @@ namespace Application.UseCases.Products.Queries
 {
     public class GetProductsByCategoryQuery : IQuery<Result<IEnumerable<ProductResponse>>>
     {
-        public GetProductsByCategoryQuery(Guid categoryId)
+        public GetProductsByCategoryQuery(int categoryId)
         {
             CategoryId = categoryId;
         }
 
-        public Guid CategoryId { get; set; }
+        public int CategoryId { get; set; }
 
     }
 }

@@ -10,9 +10,9 @@ namespace Domain.Entities
     public class Role : BaseEntity
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty!;
 
         // Navigation property
-        public List<UserRole> UserRoles { get; set; }
+        public List<UserRole>? UserRoles { get; set; }
     }
 }

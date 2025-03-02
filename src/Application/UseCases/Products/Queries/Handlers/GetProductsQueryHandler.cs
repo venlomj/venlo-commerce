@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using Application.DTOs.categories;
 using Application.DTOs.Pictures;
 using Application.DTOs.Products;
 using AutoMapper;
@@ -38,18 +39,11 @@ namespace Application.UseCases.Products.Queries.Handlers
                 {
                     var trimmedSearchTerm = request.SearchTerm?.Trim().ToLower(); // Trim and lower case the search term
 
-                    // Log for debugging
-                    Console.WriteLine($"SearchTerm: {request.SearchTerm}, Trimmed: {trimmedSearchTerm}");
-                    Console.WriteLine($"Category: {request.Category}, MinPrice: {request.MinPrice}, MaxPrice: {request.MaxPrice}");
-
                     // Build the filter expression based on provided search parameters
                     filter = p => (string.IsNullOrEmpty(trimmedSearchTerm) || p.Name.ToLower().Contains(trimmedSearchTerm) || p.Description.ToLower().Contains(trimmedSearchTerm))
                                   && (string.IsNullOrEmpty(request.Category) || (p.Category != null && p.Category.Name == request.Category))
                                   && (!request.MinPrice.HasValue || p.Price >= request.MinPrice)
                                   && (!request.MaxPrice.HasValue || p.Price <= request.MaxPrice);
-
-                    // Log the filter expression for debugging
-                    Console.WriteLine($"Filter Expression: {filter}");
                 }
 
                 // Step 2: Build Sorting Logic
@@ -67,21 +61,12 @@ namespace Application.UseCases.Products.Queries.Handlers
                             : query.OrderBy(p => p.Price),
                         _ => query.OrderBy(p => p.Name), // Default sorting by name
                     };
-
-                    // Log the sorting logic for debugging
-                    Console.WriteLine($"SortBy: {request.SortBy}, SortOrder: {request.SortOrder}");
                 }
 
                 // Step 3: Get Data from Repository
                 var totalCount = await _productsReader.CountAsync(filter);
 
-                // Log the total count for debugging
-                Console.WriteLine($"Total Count: {totalCount}");
-
                 var products = await _productsReader.GetFiltered(filter, orderBy, request.Page, request.PageSize);
-
-                // Log the number of products retrieved for debugging
-                Console.WriteLine($"Products Retrieved: {products.Count()}");
 
                 // Step 4: Fetch and Map Images
                 var images = await _productImageRepository.GetAll();
@@ -92,6 +77,9 @@ namespace Application.UseCases.Products.Queries.Handlers
                     var productImages = images.Where(img => img.ProductId == product.Id).ToList();
 
                     var productResponse = _mapper.Map<ProductResponse>(product);
+
+                    // Map category info to ProductResponse
+                    productResponse.Category = _mapper.Map<CategoryResponse>(product.Category); // Direct mapping from Category object
 
                     // Map images and attach to the product response
                     productResponse.Images = _mapper.Map<List<PictureResponse>>(productImages);
@@ -105,39 +93,10 @@ namespace Application.UseCases.Products.Queries.Handlers
             }
             catch (Exception ex)
             {
-                // Log the exception for debugging
-                Console.WriteLine($"Error in GetProductsQuery Handler: {ex.Message}");
-                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-
                 // Return a failure result
                 return new Result<PagedResult<ProductResponse>>(new BusinessLogicException("GetProductsQuery.Failed", ex.Message));
             }
         }
 
-        //public async Task<Result<PagedResult<ProductResponse>>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
-        //{
-        //    var totalCount = await _productsReader.CountAsync();
-        //    var products = await _productsReader.GetPagedAsync(request.Page, request.PageSize);
-
-        //    var images = await _productImageRepository.GetAll();
-
-        //    // Map images to products using AutoMapper
-        //    var productResponses = products.Select(product =>
-        //    {
-        //        // Filter images by ProductId
-        //        var productImages = images.Where(img => img.ProductId == product.Id).ToList();
-
-        //        // Map Product entity to ProductResponse DTO using AutoMapper
-        //        var productResponse = _mapper.Map<ProductResponse>(product);
-
-        //        // Attach images to the DTO
-        //        productResponse.Images = _mapper.Map<List<PictureResponse>>(productImages);
-
-        //        return productResponse;
-        //    }).ToList(); // Ensure it's a List<ProductResponse>
-
-        //    // Return a properly structured Result<PagedResult<ProductResponse>>
-        //    return new Result<PagedResult<ProductResponse>>(new PagedResult<ProductResponse>(productResponses, totalCount, request.Page, request.PageSize));
-        //}
     }
 }

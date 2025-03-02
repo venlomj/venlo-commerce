@@ -8,7 +8,7 @@ using Domain.Repositories.Base;
 
 namespace Domain.Repositories.Orders
 {
-    public interface IOrdersReaderRepository : IBaseRead<Order>
+    public interface IOrdersReaderRepository : IBaseRead<Order, Guid>
     {
     }
 }

@@ -13,7 +13,7 @@ namespace Domain.Entities
         public Guid ProductId { get; set; }
 
         // Navigation Property
-        public virtual Order Order { get; set; }
-        public virtual Product Product { get; set; }
+        public virtual Order? Order { get; set; }
+        public virtual Product? Product { get; set; }
     }
 }

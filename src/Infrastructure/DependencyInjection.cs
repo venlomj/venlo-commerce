@@ -1,23 +1,25 @@
-﻿using Domain.Attributes.Interfaces;
+﻿using Application.Abstractions.Authentication;
 using Domain.Documents;
+using Domain.Repositories.Categories;
 using Domain.Repositories.Inventories;
 using Domain.Repositories.Orders;
 using Domain.Repositories.Pictures;
 using Domain.Repositories.Products;
-using Domain.Settings;
+using Domain.Repositories.Users;
 using Domain.UoW;
+using Infrastructure.Authentication;
 using Infrastructure.Persistence.SQL;
 using Infrastructure.Repositories;
+using Infrastructure.Repositories.Categories;
 using Infrastructure.Repositories.Inventories;
 using Infrastructure.Repositories.Orders;
 using Infrastructure.Repositories.Pictures;
 using Infrastructure.Repositories.Products;
+using Infrastructure.Repositories.Users;
 using Infrastructure.UoW;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using MongoDB.Driver;
 
 namespace Infrastructure
 {
@@ -33,6 +35,11 @@ namespace Infrastructure
             services.AddTransient<IInventoriesWriterRepository, InventoriesWriterRepository>();
             services.AddTransient<IOrderWriterRepository, OrderWriterRepository>();
             services.AddTransient<IOrdersReaderRepository, OrdersReaderRepository>();
+            services.AddTransient<ICategoryReaderRepository, CategoryReaderRepository>();
+            services.AddTransient<IPasswordHasher, PasswordHasher>();
+            services.AddTransient<IUserWriterRepository, UserWriterRepository>();
+            services.AddTransient<IUserReaderRepository, UserReaderRepository>();
+            services.AddTransient<ITokenProvider, TokenProvider>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddDbContext<VenloCommerceDbContext>(options =>
             {

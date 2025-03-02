@@ -1,7 +1,9 @@
-﻿using Application.DTOs.Inventories;
+﻿using Application.DTOs.categories;
+using Application.DTOs.Inventories;
 using Application.DTOs.Orders;
 using Application.DTOs.Pictures;
 using Application.DTOs.Products;
+using Application.DTOs.Users;
 using AutoMapper;
 using Domain.Documents;
 using Domain.Entities;
@@ -16,6 +18,8 @@ namespace Application.Mappings
         {
             CreateMap<Product, ProductResponse>();
             CreateMap<ProductRequest, Product>();
+            CreateMap<Category, CategoryResponse>();
+
 
             // Mapping for IFormFile to byte[]
             CreateMap<IFormFile, byte[]>().ConvertUsing<FormFileToByteArrayConverter>();
@@ -51,6 +55,11 @@ namespace Application.Mappings
             CreateMap<OrderLineItemResponse, InvoiceLineItem>()
                 .ForMember(dest => dest.UnitPrice, opt => opt.MapFrom(src => src.UnitPrice))
                 .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.UnitPrice * src.Quantity));
+
+            // User Mappings
+            CreateMap<User, UserResponse>();
+            CreateMap<UserRequest, User>();
+            CreateMap<LoginRequest, User>();
         }
     }
 }

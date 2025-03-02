@@ -7,13 +7,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories.Products
 {
-    public class ProductsReaderRepository(VenloCommerceDbContext context) : BaseReader<Product>,
+    public class ProductsReaderRepository(VenloCommerceDbContext context) : BaseReader<Product, Guid>,
         IProductsReaderRepository
     {
         public override async Task<IEnumerable<Product>> GetAll()
         {
             return await context.Products.ToListAsync();
-
         }
 
         public override async Task<IEnumerable<Product>> GetFiltered(
@@ -21,7 +20,7 @@ namespace Infrastructure.Repositories.Products
             Func<IQueryable<Product>, IOrderedQueryable<Product>>? orderBy = null,
             int page = 1, int pageSize = 10)
         {
-            IQueryable<Product> query = context.Products;
+            IQueryable<Product> query = context.Products.Include(p => p.Category);
 
             if (filter != null)
             {
@@ -30,7 +29,7 @@ namespace Infrastructure.Repositories.Products
 
             if (orderBy != null)
             {
-                query = orderBy(query);
+                query = orderBy(query);//.Include(p => p.Category);
             }
 
             return await query.Skip((page - 1) * pageSize)
@@ -78,7 +77,7 @@ namespace Infrastructure.Repositories.Products
             return await context.Products.AnyAsync(x => x.Id == id);
         }
 
-        public async Task<IEnumerable<Product>> GetByCategoryIdAsync(Guid categoryId)
+        public async Task<IEnumerable<Product>> GetByCategoryIdAsync(int categoryId)
         {
             return await context.Products
                 .Where(x => x.CategoryId == categoryId)

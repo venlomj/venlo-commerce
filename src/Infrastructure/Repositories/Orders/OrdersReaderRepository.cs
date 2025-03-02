@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories.Orders
 {
-    public class OrdersReaderRepository(VenloCommerceDbContext context) : BaseReader<Order>,
+    public class OrdersReaderRepository(VenloCommerceDbContext context) : BaseReader<Order, Guid>,
         IOrdersReaderRepository
     {
         public override async Task<IEnumerable<Order>> GetAll()

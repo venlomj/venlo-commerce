@@ -18,7 +18,7 @@ namespace Api.Controllers.Base
 
                     return BadRequest(new { message = ex.Message });
                 },
-                onNull: () => NotFound(new {message = "Not found. "})
+                onNull: () => NotFound(new { message = "Not found. " })
             );
         }
     }

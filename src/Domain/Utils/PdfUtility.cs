@@ -1,9 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
+using iText.Kernel.Pdf;
+using iText.Kernel.Font;
+using iText.IO.Font.Constants;
+using iText.Kernel.Colors;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Properties;
 using Domain.Models;
+using iText.Layout.Borders;
 
 namespace Domain.Utils
 {
@@ -21,50 +26,31 @@ namespace Domain.Utils
 
                 var fullFilePath = Path.Combine(documentsPath, filePath);
 
-                using (var stream = new FileStream(fullFilePath, FileMode.Create))
+                using (var writer = new PdfWriter(fullFilePath))
+                using (var pdf = new PdfDocument(writer))
+                using (var document = new Document(pdf))
                 {
-                    var document = new Document(PageSize.A4, 50, 50, 25, 25);
-                    var writer = PdfWriter.GetInstance(document, stream);
+                    var titleFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
+                    var normalFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
 
-                    document.Open();
+                    // Titel
+                    document.Add(new Paragraph("FACTUUR").SetFont(titleFont).SetFontSize(18).SetTextAlignment(TextAlignment.CENTER));
 
-                    var titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18);
-                    var normalFont = FontFactory.GetFont(FontFactory.HELVETICA, 12);
-                    var boldFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12);
-
-                    // 🏢 Bedrijfsinformatie en klantgegevens
-                    var headerTable = new PdfPTable(2) { WidthPercentage = 100 };
-                    headerTable.SetWidths(new float[] { 50, 50 });
-
-                    var companyInfo = new Paragraph("Venlo Commerce\nKerkstraat 3\n2430 AB, Laakdal\nBTW-nummer: BE1234567890", normalFont);
-                    var invoiceInfo = new Paragraph($"Factuurnummer: {invoice.InvoiceNumber}\nDatum: {invoice.DateCreated:dd/MM/yyyy}\nVervaldatum: {invoice.DateCreated.AddDays(30):dd/MM/yyyy}", normalFont);
-
-                    var cell1 = new PdfPCell(companyInfo) { Border = Rectangle.NO_BORDER };
-                    var cell2 = new PdfPCell(invoiceInfo) { Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_RIGHT };
-
-                    headerTable.AddCell(cell1);
-                    headerTable.AddCell(cell2);
+                    // Factuurinformatie
+                    Table headerTable = new Table(new float[] { 1, 1 }).UseAllAvailableWidth();
+                    headerTable.AddCell(new Cell().Add(new Paragraph("Venlo Commerce\nKerkstraat 3\n2430 AB, Laakdal\nBTW-nummer: BE1234567890").SetFont(normalFont)).SetBorder(Border.NO_BORDER));
+                    headerTable.AddCell(new Cell().Add(new Paragraph($"Factuurnummer: {invoice.InvoiceNumber}\nDatum: {invoice.DateCreated:dd/MM/yyyy}\nVervaldatum: {invoice.DateCreated.AddDays(30):dd/MM/yyyy}").SetFont(normalFont)).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT));
                     document.Add(headerTable);
 
-                    document.Add(new Paragraph("\n"));
+                    document.Add(new Paragraph(" "));
 
-                    // 📌 Factuurtitel
-                    var title = new Paragraph("FACTUUR", titleFont)
-                    {
-                        Alignment = Element.ALIGN_CENTER,
-                        SpacingAfter = 20
-                    };
-                    document.Add(title);
-
-                    // 📋 Factuurtabel
-                    var table = new PdfPTable(5) { WidthPercentage = 100 };
-                    table.SetWidths(new float[] { 10, 35, 15, 15, 15 });
-
-                    AddCell(table, "SKU", boldFont, BaseColor.LIGHT_GRAY);
-                    AddCell(table, "Product", boldFont, BaseColor.LIGHT_GRAY);
-                    AddCell(table, "Aantal", boldFont, BaseColor.LIGHT_GRAY);
-                    AddCell(table, "Prijs per stuk", boldFont, BaseColor.LIGHT_GRAY);
-                    AddCell(table, "Totaal", boldFont, BaseColor.LIGHT_GRAY);
+                    // Factuurtabel
+                    Table table = new Table(new float[] { 10, 35, 15, 15, 15 }).UseAllAvailableWidth();
+                    AddCell(table, "SKU", titleFont, new DeviceGray(0.9f));
+                    AddCell(table, "Product", titleFont, new DeviceGray(0.9f));
+                    AddCell(table, "Aantal", titleFont, new DeviceGray(0.9f));
+                    AddCell(table, "Prijs per stuk", titleFont, new DeviceGray(0.9f));
+                    AddCell(table, "Totaal", titleFont, new DeviceGray(0.9f));
 
                     foreach (var item in invoice.LineItems)
                     {
@@ -76,33 +62,23 @@ namespace Domain.Utils
                     }
 
                     document.Add(table);
-                    document.Add(new Paragraph("\n"));
+                    document.Add(new Paragraph(" "));
 
-                    // 🔢 Subtotaal & BTW berekening
+                    // Subtotaal, BTW en totaal
                     decimal subtotal = invoice.TotalAmount;
                     decimal tax = subtotal * 0.21m;
                     decimal grandTotal = subtotal + tax;
 
-                    var summaryTable = new PdfPTable(2) { WidthPercentage = 50, HorizontalAlignment = Element.ALIGN_RIGHT };
-                    summaryTable.SetWidths(new float[] { 60, 40 });
-
-                    AddSummaryCell(summaryTable, "Subtotaal:", subtotal, boldFont);
-                    AddSummaryCell(summaryTable, "BTW (21%):", tax, boldFont);
-                    AddSummaryCell(summaryTable, "Totaal te betalen:", grandTotal, boldFont, BaseColor.YELLOW);
+                    Table summaryTable = new Table(new float[] { 60, 40 }).SetHorizontalAlignment(HorizontalAlignment.RIGHT);
+                    AddSummaryCell(summaryTable, "Subtotaal:", subtotal, titleFont);
+                    AddSummaryCell(summaryTable, "BTW (21%):", tax, titleFont);
+                    AddSummaryCell(summaryTable, "Totaal te betalen:", grandTotal, titleFont, new DeviceRgb(255, 255, 0));
 
                     document.Add(summaryTable);
-                    document.Add(new Paragraph("\n"));
+                    document.Add(new Paragraph(" "));
 
-                    // 📌 Betaal- en afsluitende boodschap
-                    var footer = new Paragraph("Gelieve het totaalbedrag binnen 30 dagen te voldoen.\nBedankt voor uw bestelling!", normalFont)
-                    {
-                        Alignment = Element.ALIGN_CENTER,
-                        SpacingBefore = 20
-                    };
-                    document.Add(footer);
-
-                    document.Close();
-                    writer.Close();
+                    // Voetnoot
+                    document.Add(new Paragraph("Gelieve het totaalbedrag binnen 30 dagen te voldoen.\nBedankt voor uw bestelling!").SetFont(normalFont).SetTextAlignment(TextAlignment.CENTER));
                 }
 
                 Console.WriteLine($"Factuur succesvol gegenereerd: {filePath}");
@@ -113,23 +89,22 @@ namespace Domain.Utils
             }
         }
 
-        private static void AddCell(PdfPTable table, string text, Font font, BaseColor bgColor = null)
+        private static void AddCell(Table table, string text, PdfFont font, Color bgColor = null)
         {
-            var cell = new PdfPCell(new Phrase(text, font));
-            if (bgColor != null) cell.BackgroundColor = bgColor;
-            cell.HorizontalAlignment = Element.ALIGN_CENTER;
+            var cell = new Cell().Add(new Paragraph(text).SetFont(font)).SetTextAlignment(TextAlignment.CENTER);
+            if (bgColor != null) cell.SetBackgroundColor(bgColor);
             table.AddCell(cell);
         }
 
-        private static void AddSummaryCell(PdfPTable table, string label, decimal amount, Font font, BaseColor bgColor = null)
+        private static void AddSummaryCell(Table table, string label, decimal amount, PdfFont font, Color bgColor = null)
         {
-            var labelCell = new PdfPCell(new Phrase(label, font)) { Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_LEFT };
-            var valueCell = new PdfPCell(new Phrase($"€{amount:F2}", font)) { Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_RIGHT };
+            var labelCell = new Cell().Add(new Paragraph(label).SetFont(font)).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            var valueCell = new Cell().Add(new Paragraph($"€{amount:F2}").SetFont(font)).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT);
 
             if (bgColor != null)
             {
-                labelCell.BackgroundColor = bgColor;
-                valueCell.BackgroundColor = bgColor;
+                labelCell.SetBackgroundColor(bgColor);
+                valueCell.SetBackgroundColor(bgColor);
             }
 
             table.AddCell(labelCell);

@@ -5,8 +5,8 @@ namespace Domain.Entities
     public class Order: BaseEntity
     {
         public Guid Id { get; set; }
-        public string OrderNumber { get; set; }
-        public List<OrderLineItem> OrderLineItems { get; set; } = new();
+        public string OrderNumber { get; set; } = string.Empty!;
+        public List<OrderLineItem> OrderLineItems { get; set; } = [];
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -23,6 +24,33 @@ namespace Api.Middlewares
             try
             {
                 await _next(httpContext); // Proceed with the next middleware
+            }
+            catch (ValidationException ex)
+            {
+                var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
+                _logger.LogError(ex, "Validation failed with trace id {TraceId}", traceId);
+
+                var problemDetails = new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Validation Error",
+                    Extensions = { ["traceId"] = traceId },
+                    Instance = $"{httpContext.Request.Method} {httpContext.Request.Path}",
+                    Detail = "One or more validation errors occurred."
+                };
+
+                // Ensure no duplicate error messages for each property
+                var groupedErrors = ex.Errors
+                    .GroupBy(e => e.PropertyName)
+                    .ToDictionary(
+                        group => group.Key,
+                        group => group.Select(e => e.ErrorMessage).Distinct().ToArray()); // Use Distinct to avoid duplicates
+
+                problemDetails.Extensions["errors"] = groupedErrors;
+
+                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                httpContext.Response.ContentType = "application/json";
+                await httpContext.Response.WriteAsJsonAsync(problemDetails);
             }
             catch (Exception ex)
             {
@@ -67,4 +95,5 @@ namespace Api.Middlewares
             return (StatusCodes.Status500InternalServerError, "Internal Server Error");
         }
     }
+
 }

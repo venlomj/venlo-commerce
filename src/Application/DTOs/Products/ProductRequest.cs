@@ -1,6 +1,4 @@
 ﻿
-using Application.DTOs.Pictures;
-
 namespace Application.DTOs.Products
 {
     public class ProductRequest
@@ -8,5 +6,6 @@ namespace Application.DTOs.Products
         public string Name { get; set; }
         public string Description { get; set; }
         public decimal Price { get; set; }
+        public int CategoryId { get; set; }
     }
 }

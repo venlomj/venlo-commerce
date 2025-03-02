@@ -47,8 +47,8 @@ namespace Api.Controllers
 
 
 
-        [HttpGet("category/{categoryId:guid}")]
-        public async Task<IActionResult> GetProductsByCategory([FromRoute] Guid categoryId)
+        [HttpGet("category/{categoryId:int}")]
+        public async Task<IActionResult> GetProductsByCategory([FromRoute] int categoryId)
         {
             var result = await _mediator.Send(new GetProductsByCategoryQuery(categoryId));
             return SendResult(result);

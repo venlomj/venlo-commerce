@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories.Inventories
 {
-    public class InventoriesReaderRepository(VenloCommerceDbContext context) : BaseReader<StockItem>,
+    public class InventoriesReaderRepository(VenloCommerceDbContext context) : BaseReader<StockItem, Guid>,
         IInventoriesReaderRepository
     {
         public override Task<IEnumerable<StockItem>> GetAll()

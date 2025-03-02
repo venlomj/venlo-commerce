@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Domain.Repositories.Base
 {
-    public interface IBaseVerify<T>
+    public interface IBaseVerify<T, in TKey>
         where T : class, new()
     {
-        public Task<bool> Exists(Guid id);
+        Task<bool> Exists(TKey id);
     }
 }

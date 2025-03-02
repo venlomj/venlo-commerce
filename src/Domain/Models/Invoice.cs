@@ -8,9 +8,9 @@ namespace Domain.Models
 {
     public class Invoice
     {
-        public string InvoiceNumber { get; set; }
+        public string InvoiceNumber { get; set; } = string.Empty!;
         public DateTimeOffset DateCreated { get; set; }
-        public List<InvoiceLineItem> LineItems { get; set; } = new();
+        public List<InvoiceLineItem> LineItems { get; set; } = [];
         public decimal TotalAmount => LineItems.Sum(item => item.TotalPrice);
     }
 }

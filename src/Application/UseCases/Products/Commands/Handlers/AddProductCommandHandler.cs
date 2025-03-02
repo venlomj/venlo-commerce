@@ -1,14 +1,14 @@
-﻿using Application.DTOs.Pictures;
-using Application.DTOs.Products;
+﻿using Application.DTOs.Products;
 using Application.Services;
 using AutoMapper;
 using Domain.Documents;
 using Domain.Entities;
+using Domain.Exceptions;
+using Domain.Repositories.Categories;
 using Domain.Repositories.Pictures;
 using Domain.Repositories.Products;
 using Domain.UoW;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using SharedKernel;
 
 namespace Application.UseCases.Products.Commands.Handlers
@@ -20,25 +20,32 @@ namespace Application.UseCases.Products.Commands.Handlers
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMongoRepository<ProductImage> _imageRepository;
-        private readonly IImageService _imageService;
+        private readonly ICategoryReaderRepository _categoryReader;
 
-        public AddProductCommandHandler(IProductWriterRepository productWriterRepository, IMapper mapper, IUnitOfWork unitOfWork, IProductsReaderRepository productReaderRepository, IMongoRepository<ProductImage> imageRepository, IImageService imageService)
+        public AddProductCommandHandler(IProductWriterRepository productWriterRepository, IMapper mapper, IUnitOfWork unitOfWork, IProductsReaderRepository productReaderRepository, IMongoRepository<ProductImage> imageRepository, IImageService imageService, ICategoryReaderRepository categoryReader)
         {
             _productWriterRepository = productWriterRepository;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _productReaderRepository = productReaderRepository;
             _imageRepository = imageRepository;
-            _imageService = imageService;
+            _categoryReader = categoryReader;
         }
 
         public async Task<Result<ProductResponse>> Handle(AddProductCommand request, CancellationToken cancellationToken)
         {
+            var category = await _categoryReader.GetById(request.ProductRequest.CategoryId);
+            if (category == null)
+            {
+                throw new BusinessLogicException("Category not found");
+            }
+
             var product = _mapper.Map<Product>(request.ProductRequest);
 
             product.Id = Guid.NewGuid();
             product.SkuCode = $"SKU-{Guid.NewGuid()}";
             product.DateCreated = DateTimeOffset.UtcNow;
+            product.CategoryId = category.Id;
 
 
             var id = await _productWriterRepository.Add(product);

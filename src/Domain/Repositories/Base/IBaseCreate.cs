@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Repositories.Base
 {
-    public interface IBaseCreate<T>
+    public interface IBaseCreate<in T>
         where T : class, new()
     {
         Task<Guid> Add(T entity);
