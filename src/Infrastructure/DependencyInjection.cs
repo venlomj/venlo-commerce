@@ -1,4 +1,5 @@
-﻿using Application.Abstractions.Authentication;
+﻿using System.Text;
+using Application.Abstractions.Authentication;
 using Domain.Documents;
 using Domain.Repositories.Categories;
 using Domain.Repositories.Inventories;
@@ -17,9 +18,11 @@ using Infrastructure.Repositories.Pictures;
 using Infrastructure.Repositories.Products;
 using Infrastructure.Repositories.Users;
 using Infrastructure.UoW;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure
 {
@@ -48,6 +51,31 @@ namespace Infrastructure
 
             // MongoDB Repositories
             services.AddTransient<IMongoRepository<ProductImage>, MongoRepository<ProductImage>>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddAuthenticationInternal(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(o =>
+                {
+                    o.RequireHttpsMetadata = false;
+                    o.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Secret"]!)),
+                        ValidIssuer = configuration["Jwt:Issuer"],
+                        ValidAudience = configuration["Jwt:Audience"],
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
+
+            //services.AddHttpContextAccessor();
+            //services.AddScoped<IUserContext, UserContext>();
+            //services.AddSingleton<IPasswordHasher, PasswordHasher>();
+            //services.AddSingleton<ITokenProvider, TokenProvider>();
 
             return services;
         }

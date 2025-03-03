@@ -30,6 +30,7 @@ builder.Services.AddLogging(logging =>
 // Add services to the container
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddAuthenticationInternal(configuration);
 builder.Services.AddSwaggerDocumentation();
 builder.Services.AddMongoService();
 builder.Services.AddControllers();

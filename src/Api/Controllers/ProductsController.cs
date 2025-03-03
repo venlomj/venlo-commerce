@@ -5,6 +5,7 @@ using Application.UseCases.Pictures.Command;
 using Application.UseCases.Products.Commands;
 using Application.UseCases.Products.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -28,6 +29,7 @@ namespace Api.Controllers
         /// <param name="sortOrder">Order for sorting ("asc" or "desc").</param>
         /// <returns>A paginated list of products.</returns>
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetProducts(
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10,
