@@ -29,7 +29,6 @@ namespace Api.Controllers
         /// <param name="sortOrder">Order for sorting ("asc" or "desc").</param>
         /// <returns>A paginated list of products.</returns>
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetProducts(
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10,
@@ -63,6 +62,7 @@ namespace Api.Controllers
         /// <param name="request">The product to add.</param>
         /// <returns>The added product.</returns>
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> AddProduct([FromBody] ProductRequest request)
         {
             var result = await _mediator.Send(new AddProductCommand(request));
@@ -103,6 +103,7 @@ namespace Api.Controllers
         /// <param name="request">The updated product information.</param>
         /// <returns>The updated product.</returns>
         [HttpPut("{id:guid}")]
+        [Authorize]
         public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductRequest request)
         {
             var result = await _mediator.Send(new UpdateProductCommand(id, request));
@@ -116,6 +117,7 @@ namespace Api.Controllers
         /// <param name="id">The id of the product to delete.</param>
         /// <returns>A confirmation message if the deletion is successful.</returns>
         [HttpDelete("{id:guid}")]
+        [Authorize]
         public async Task<IActionResult> DeleteProduct(Guid id)
         {
             var result = await _mediator.Send(new DeleteProductCommand(id));

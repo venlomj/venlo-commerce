@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities;
+using Domain.Repositories.Base;
 
-namespace Application.Abstractions.Authentication
+namespace Domain.Repositories.UserRoles
 {
-    public interface ITokenProvider
+    public interface IUserRolesWriterRepository : IBaseCreate<UserRole>
     {
-        Task<string> Create(User user);
     }
 }

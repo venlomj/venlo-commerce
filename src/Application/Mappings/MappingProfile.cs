@@ -3,6 +3,8 @@ using Application.DTOs.Inventories;
 using Application.DTOs.Orders;
 using Application.DTOs.Pictures;
 using Application.DTOs.Products;
+using Application.DTOs.Roles;
+using Application.DTOs.UserRoles;
 using Application.DTOs.Users;
 using AutoMapper;
 using Domain.Documents;
@@ -56,6 +58,12 @@ namespace Application.Mappings
                 .ForMember(dest => dest.UnitPrice, opt => opt.MapFrom(src => src.UnitPrice))
                 .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.UnitPrice * src.Quantity));
 
+            // Mapping for Role and UserRole
+            CreateMap<Role, RoleResponse>();
+
+            // User Role Mapping
+            CreateMap<UserRole, UserRoleResponse>()
+                .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role.Name));
             // User Mappings
             CreateMap<User, UserResponse>();
             CreateMap<UserRequest, User>();

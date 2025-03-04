@@ -2,8 +2,12 @@
 using Application.DTOs.Products;
 using Application.DTOs.Users;
 using Application.UseCases.Products.Commands;
+using Application.UseCases.Products.Queries;
 using Application.UseCases.Users.Commands;
+using Application.UseCases.Users.Queries;
+using Domain.Constants;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -38,6 +42,15 @@ namespace Api.Controllers
         public async Task<IActionResult> Register([FromBody] LoginRequest request)
         {
             var result = await _mediator.Send(new LoginUserCommand(request));
+
+            return SendResult(result);
+        }
+
+        [HttpGet("{id:guid}")]
+        [Authorize(Policy = "AdminPolicy")]
+        public async Task<IActionResult> GetProfile(Guid id)
+        {
+            var result = await _mediator.Send(new GetUserQuery(id));
 
             return SendResult(result);
         }

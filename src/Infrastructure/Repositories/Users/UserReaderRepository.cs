@@ -27,8 +27,29 @@ namespace Infrastructure.Repositories.Users
 
         public override async Task<User> GetById(Guid id)
         {
-            return await context.Users.FindAsync(id) ?? null!;
+            // Approach 1: Using FindAsync, which is optimized for primary key lookups.
+            // It's simple and fast, returning the entity with the matching ID or null if not found.
+            // This approach works well when you're looking up data by the primary key (e.g., Guid).
+
+            return await context.Users.FindAsync(id) ?? null!;  // If the user is not found, returns null.
         }
+
+
+        public async Task<User> GetById2(Guid id)
+        {
+            // Approach 2: Using SingleOrDefaultAsync with a WHERE clause.
+            // This is more flexible and allows you to add complex filters or joins in the future.
+            // It returns a single matching result or null if no match is found.
+
+            // SingleOrDefaultAsync ensures that only **one** or **zero** entity should be returned.
+            // If more than one entity is returned, it will throw an exception, which helps catch unexpected data issues (duplicates).
+            // This is useful when you're expecting exactly one match or none, ensuring data integrity.
+
+            return await context.Users
+                .Where(u => u.Id == id)   // Applying a filter to match by ID.
+                .SingleOrDefaultAsync() ?? null!;   // Will throw if multiple users are found with the same ID, enforcing uniqueness.
+        }
+
 
         public override Task<IEnumerable<User>> MultipleByValue(IEnumerable<string> values)
         {

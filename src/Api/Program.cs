@@ -4,7 +4,10 @@ using Domain.Attributes.Interfaces;
 using Domain.Settings;
 using Infrastructure;
 using Infrastructure.Persistence.SQL;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +55,10 @@ app.UseMiddleware<Api.Middlewares.GlobalExceptionHandlerMiddleware>();
 app.UseSwaggerDocumentation();
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 
 using (var scope = app.Services.CreateScope())

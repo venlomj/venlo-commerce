@@ -44,7 +44,7 @@ namespace Application.UseCases.Users.Commands.Handler
                 return new BusinessLogicException($"User with {request.LoginRequest.Email} not found");
             }
 
-            var token = _tokenProvider.Create(user);
+            var token = await _tokenProvider.Create(user);
 
             return token;
         }

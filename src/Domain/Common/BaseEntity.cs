@@ -12,6 +12,6 @@ namespace Domain.Common
         public DateTimeOffset? DateModified { get; set; }
         public DateTimeOffset? DateDeleted { get; set; }
         //public Guid? UserId { get; set; }
-        public bool IsDeleted { get; set; } = false;
+        public bool? IsDeleted { get; set; } = false;
     }
 }

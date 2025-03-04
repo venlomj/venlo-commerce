@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.DTOs.Roles;
 
 namespace Application.DTOs.Users
 {
@@ -14,5 +15,7 @@ namespace Application.DTOs.Users
         public string LastName { get; set; }
         public string Phone { get; set; }
         public string PasswordHash { get; set; }
+
+        public List<RoleResponse> Roles { get; set; } = new();
     }
 }
